@@ -183,7 +183,10 @@ $export(function($this, $http, $timeout){
 				smslist.push(order);
 			}
 		})
-		if(!smslist.length)return alert('没有选择有效号码');
+		if(!smslist.length){
+			$this.filter();
+			return alert('没有选择有效号码')
+		}
 		if(window.confirm('共选择'+smslist.length+'条有效号码，确定发送？')){
 			smsing=true;
 			$('#sms').modal('show')
