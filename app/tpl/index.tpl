@@ -247,7 +247,7 @@ $export(function($this, $http, $timeout){
 			}).success(function(data){
 				if(200 != data.err_code)return alert('请求失败请重试！');
 				$this.teams = data.data;
-				getOrder.timeout(100000);
+				getOrder.timeout(60000*3);
 				$this.orders = [];
 				angular.forEach(orders, function(order){
 					$this.orders.push(order)
