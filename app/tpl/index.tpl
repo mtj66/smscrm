@@ -46,7 +46,7 @@
 		<div class="btn-group btn-group-sm">
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':score}" ng-click="filter(score=true)">已评价</button>
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!score}" ng-click="filter(score=false)">未评价</button>
-		
+
 	</div>
 		<div class="btn-group btn-group-sm">
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':sms}" ng-click="filter(sms=true)">已发送</button>
@@ -197,7 +197,7 @@ $export(function($this, $http, $timeout){
 		var smslist = [];
 		if(order)order.checked=true;
 		angular.forEach(order ? [order] : $this.filterOrders, function(order){
-			if(($this.score?order.score>0:order.score<=0)&&($this.sms?order.sms>0:order.sms<=0)){
+			if(($this.score?order.score>0:(order.score||0)<=0)&&($this.sms?order.sms>0:(order.sms||0)<=0)){
 				if(!order.checked||!order.customer_phone)return;
 				if(order.customer_phone.toString().indexOf('950')==0)return;
 				smslist.push(order);
