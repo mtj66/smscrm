@@ -3,7 +3,8 @@ require.config({
 	baseUrl: './',
 	paths: {
 		'bootstrap': 'static/js/bootstrap.min',
-		'respond': 'static/js/respond.min'
+		'respond': 'static/js/respond.min',
+		'html5sql': 'js/html5sql'
 	},
 	shim: {
 		bootstrap: ['respond']

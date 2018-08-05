@@ -1,42 +1,87 @@
+<title>smscrm</title>
 <code>
 	<main>
 	<div class="right">
+		<div class="modal fade" tabindex="-1" role="dialog" id="sms">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">发送短信</h4>
+      </div>
+      	<li class="list-group-item" ng-repeat="item in smsOrders" ng-class="{'list-group-item-success': item.smsok}">
+      		<span class="pull-right" ng-if="item.smsok">发送完成</span>
+      		{{item.customer_phone}}
+
+      		{{item.customer_name}}
+      	</li> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="sendSmsCanel()">取消/关闭</button>
+        <button type="button" class="btn btn-primary" ng-click="sendSmsSubmit()">发送</button>
+      </div> 
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 	<div class="panel panel-default">
       <div class="panel-heading">
-
-      系统正在自动运行，<span ng-bind="timer" style="color:Red"></span>秒后会重新拉取新的数据，无需F5
-	
+      系统正在自动运行并同步数据，无需F5
+      <span style="color:red" ng-if="doing" ng-bind="doing"></span>
+      <span class="pull-right badge" ng-bind="orders.length">loading</span>
   </div>
 <div class="panel-body">
-	<button type="button" class="btn btn-danger btn-block" ng-click="excel('ta')">导出今日已完成数据(共{{(orders|filter:{state:40}).length}}条)</button>
-	<hr>
+	<!-- <button type="button" class="btn btn-danger btn-block" ng-click="excel('ta')">导出今日已完成数据(共{{(orders|filter:{state:40}).length}}条)</button>
+	<hr> -->
 	<!-- <input type="checkbox" ng-false-value='' ng-true-value="40" ng-model="$root.states">仅显示已完成{{$root.states}} -->
-	<span class="btn-group">
-		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!teamid}" ng-click="teamid=0">全部</button>
-		<button type="button" class="btn btn-default" ng-class="{'btn-warning':$parent.teamid==team.teamId}" ng-repeat="team in teams" ng-click="$parent.teamid=team.teamId">{{team.teamName}}</button>
-	</span>
+
+	<div class="btn-group btn-group-sm">
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':30==state}" ng-click="filter(state=30)">配送中</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':40==state}" ng-click="filter(state=40)">
+		已完成
+		</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':score}" ng-click="filter(score=true)">已评价</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!score}" ng-click="filter(score=false)">未评价</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':sms}" ng-click="filter(sms=true)">已发送</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!sms}" ng-click="filter(sms=false)">未发送</button>
+	</div>
+	<p></p>
+	<div class="btn-group btn-group-sm">
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!teamid}" ng-click="filter(teamid=0)">全部团队</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':$parent.teamid==team.teamId}" ng-repeat="team in teams" ng-click="filter($parent.teamid=team.teamId)">{{team.teamName}}</button>
+	</div>
+
 </div>
-<table class="table" id=ta>
+<table class="table  table-bordered table-hover" id=ta>
         <thead>
           <tr>
-            <th>支队</th>
-            <th>状态</th>
-			<th>完成时间</th>
-            <th>运单ID</th>
-            <th>顾客姓名</th>
-            <th>顾客手机</th>
-            <th>顾客地址</th>
+            <th width="180">支队</th>
+            <th width="150">运单ID</th>
+            <th width="120">顾客姓名</th>
+            <th width="120">顾客手机</th>
+            <th width="110">状态</th>
+			<th width="110">完成时间</th>
+            <th width="110">评价</th>
+            <th width="110">短信</th>
+            <th>
+			<input type="checkbox" ng-model="checkedall" ng-click="checkall()">
+            <button type="button" class="btn btn-xs btn-danger" ng-click="sendSms()">批量发送</button>
+        	</th>
           </tr>
         </thead>
 
-          <tr ng-repeat="order in orders | filter: {state:40, teamId: teamid||''} | orderBy: '-completeMinutes'">
-            <td>{{order.teamName}}</td>
-			<td>{{order.state?'已完成':'配送中'}}{{order.completeMinutes}}分钟</td>
-			<td>{{order.completeTime | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
-            <td>'{{order.trackingId}}</td>
-            <td>{{order.customerName}}</td>
-            <td>{{order.customerPhone}}</td>
-            <td>{{order.customerAddress}}</td>
+          <tr ng-repeat="order in filterOrders = (orders | filter: {team_id: teamid || '', state:state}| orderBy: complete_minutes)" ng-class="{'warning': order.checked}" ng-if="(score?order.score>0:(order.score||0)<=0)&&(sms?order.sms>0:(order.sms||0)<=0)">
+            <td>{{order.team_name}}</td>
+            <td>{{order.tracking_id}}</td>
+            <td>{{order.customer_name}}</td>
+            <td>{{order.customer_phone}}</td>
+			<td>{{order.state==40 ? '已完成' : '配送中'}}</td>
+			<td>{{order.state==40?complete_minutes(order):'NaN'}}分钟</td>
+            <td>{{order.score >=0 ? '已评' : '未评'}}</td>
+            <td>已发送{{order.sms||0}}次</td>
+            <td>
+            	<input type="checkbox" ng-model="order.checked" ng-checked="order.checked">
+            	<button type="button" class="btn btn-xs btn-info" ng-click="sendSms(order)">单条发送</button>
+            </td>
           </tr>
       </table>
     </div>
@@ -49,6 +94,249 @@
 <script>
 $export(function($this, $http, $timeout){
 	if(!window.fetch)return alert('请切换到极速模式');
+	var orders, scores, smsing, today = new Date().toLocaleDateString(), time = new Date().getTime();
+	var smstxt='【蜂鸟配送】[name]您好,我是外卖小哥.恳求您帮忙点击“超赞”好评,每一个评价对我的工作至关重要.如有不满意请勿差评，有问题可以拨打我本人电话，第一时间给您解决.祝您用餐愉快~退订回复T';
+	
+	require(['html5sql'], function(){
+		$this.state = 40;
+	$this.score = false;
+	$this.sms = false;
+	$this.checkall = function(){
+		angular.forEach($this.filterOrders, function(order){
+			if(($this.score?order.score>0:order.score<=0)&&($this.sms?order.sms>0:order.sms<=0)){
+				order.checked = !$this.checkedall
+			}
+			
+		})
+	}
+	$this.filter = function(){
+		angular.forEach($this.orders, function(order){
+			$this.checkedall=false;
+			order.checked = false
+		})
+	}
+	$this.echo = function(str){
+		$this.doing = str
+	}
+	$this.sendSmsCanel = function(hide){
+		if(hide)$('#sms').modal('hide')
+		$this.smsOrders=[];
+		smsing=false;
+	}
+
+	$('#sms').on('hide.bs.modal', function(){
+		$this.sendSmsCanel()
+	});
+
+	$this.sendSmsSubmit = function(){
+		var ok = false,count=$this.smsOrders.length;
+		angular.forEach($this.smsOrders, function(order){
+			if(order.smsok)return count--;
+			window.fetch('https://sh2.ipyy.com/smsJson.aspx', {
+				headers:{
+					'Content-type':'application/x-www-form-urlencoded; charset=utf-8'
+				},
+				method: 'post',
+				credentials: 'include',
+				mode:'no-cors',
+				body: 'action=send&account=gsj420&password=gsj4256&mobile=13393719370&phone='+order.customer_phone+'&content='+escape(smstxt.replace('[name]', order.customer_name))
+			}).then(function(response){
+				count--;
+				$this.$apply.to(function(){
+					order.smsok=true
+					order.sms=(order.sms||0)+1
+					order.__dirty=true;
+				})
+				if(count==0){
+					alert('发送完成')
+					$this.sendSmsCanel(true)
+					saveOrder()
+				}
+			})
+		})
+		if(count==0){
+				alert('发送完成')
+				$this.sendSmsCanel(true)
+					saveOrder()
+				}
+
+	}
+	$this.sendSms = function(order){
+		if(smsing){
+			$('#sms').modal('show')
+			return;
+		}
+		var smslist = [];
+		if(order)order.checked=true;
+		angular.forEach(order ? [order] : $this.filterOrders, function(order){
+			if(($this.score?order.score>0:order.score<=0)&&($this.sms?order.sms>0:order.sms<=0)){
+				if(!order.checked||!order.customer_phone)return;
+				if(order.customer_phone.toString().indexOf('950')==0)return;
+				smslist.push(order);
+			}
+		})
+		$this.filter();
+		if(!smslist.length)return alert('没有选择有效号码');
+		if(window.confirm('共选择'+smslist.length+'条有效号码，确定发送？')){
+			smsing=true;
+			$('#sms').modal('show')
+			$this.smsOrders = smslist;
+		}
+	}
+	$this.complete_minutes = function(e){
+		return parseInt((time - e.complete_time)/60000);
+	}
+
+		function init(){
+			console.log(orders)
+			$http.get('https://app2-edu.ele.me/talaris-svr/webapi/sso/init', {
+				withCredentials: true
+			}).success(function(data){
+				if(200 != data.err_code)return alert('授权失败请重试！');
+				getTeam($this.user = data.data);
+			})
+		}
+		function saveOrder(){
+			var count = 0,
+				index = 0;
+			angular.forEach(orders, function(order){
+				count++;
+				if(!order.__id){
+					html5sql.process([{
+						sql: 'insert into orders (tracking_id, org_id, org_name, team_id, team_name, customer_name, customer_phone, customer_address, complete_time , state, score, date, sms) values (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+						data: [order.tracking_id, order.org_id, order.org_name, order.team_id, order.team_name, order.customer_name, order.customer_phone, order.customer_address, order.complete_time, order.state, order.score, order.date, order.sms],
+						success: function(){
+							index++;
+							$this.$apply.to(function(){
+								$this.echo('insert success: '+ order.tracking_id)
+								order.__id=true;
+								if(index>=count)$this.echo('')
+							})
+						}
+					}])
+				}else if(order.__dirty){
+					index++;
+					html5sql.process([{
+						sql: sprintf('update orders set complete_time=%s, state=%s, score=%s, sms=%s where tracking_id="%s"', 
+							order.complete_time,
+							order.state,
+							order.score >= 0 ? order.score : -1,
+							order.sms,
+							order.tracking_id
+							),
+						success: function(){
+							$this.$apply.to(function(){
+								$this.echo('update success: '+ order.tracking_id)
+							order.__dirty=false;
+								if(index>=count)$this.echo('')
+							})
+						}
+					}])
+				} else {
+					index++;
+					$this.echo('')
+				}
+			})
+		}
+		function getTeam(){
+			$http.get('https://app2-edu.ele.me/kunkka-svr/aeolus/homePage/getTeamList', {
+				withCredentials: true
+			}).success(function(data){
+				if(200 != data.err_code)return alert('请求失败请重试！');
+				$this.teams = data.data;
+				getOrder.timeout(100000);
+				$this.orders = [];
+				angular.forEach(orders, function(order){
+					$this.orders.push(order)
+				})
+			})
+		}
+		function getScore(){
+			function update(){
+				if(!scores)return;
+				angular.forEach(scores, function(order){
+					if(!orders[order.trackingId] || orders[order.trackingId].score == order.star)return;
+
+					angular.extend(orders[order.trackingId], {
+						score: order.star,
+						__dirty: true
+					});
+				})
+				$this.echo('同步评价数据成功！');
+			}
+			if(arguments.length)return update();
+			var startTime = new Date(today).getTime(),
+			endTime = startTime  + 86400000;
+			$http.get('https://stargate.ele.me/lpd_quality.dashboard/stargate/quality/evaluate/list?startTime='+startTime+'&endTime='+endTime+'&pageCount=1&pageSize=10000', {
+				withCredentials: true
+			}).success(function(data){
+				if(200 != data.code)return $this.echo('请求失败请重试！');
+				scores = data.data.detailList;
+				update()
+			})
+
+		}
+		function getOrder(){
+
+			getScore()
+			angular.forEach($this.teams, function(team){
+				$http.get('https://app2-edu.ele.me/talaris-svr/webapi/web/dispatch/shippingorder/query?teamId='+team.teamId+'&status=30,40&pageIndex=1&pageSize=10000', {
+					withCredentials: true
+				}).success(function(data){
+					if(200 != data.err_code)return $this.echo('请求失败请重试！');
+					if(!data.data || !data.data.data)return;
+					angular.forEach(data.data.data, function(order){
+						if(!orders[order.trackingId]){
+							orders[order.trackingId] = {
+								tracking_id: order.trackingId,
+								org_id: $this.user.org_id,
+								org_name: $this.user.org_name,
+								team_id: team.teamId,
+								team_name: team.teamName,
+								customer_name: order.customerName,
+								customer_phone: order.customerPhone,
+								customer_address: order.customerAddress,
+								complete_time: order.completeTime,
+								state: order.state,
+								date: today,
+								sms: 0
+							}
+							$this.orders.push(orders[order.trackingId])
+						}else{
+							if(orders[order.trackingId].complete_time != order.completeTime || orders[order.trackingId].state != order.state){
+								console.log(orders[order.trackingId].complete_time, order.completeTime,orders[order.trackingId].state, order.state)
+
+								angular.extend(orders[order.trackingId], {
+									complete_time: order.completeTime,
+									state: order.state,
+									__dirty: true
+								})
+							}
+							
+						}
+					});
+					getScore(true);
+					saveOrder()
+				})
+			})
+		}
+		html5sql.openDatabase('smscrm', 'smscrm database', 512 * 1024 * 1024);
+		html5sql.process([
+		{
+	  		sql: 'create table IF NOT EXISTS orders (__id integer primary key autoincrement, org_id text, org_name text, team_id text, team_name text, tracking_id text, customer_name text, customer_phone text, customer_address text, complete_time text, state integer, score integer, date text, sms integer)'
+		}, {
+			sql: 'select * from orders where date = "' +today +'"',
+			success: function(){
+				
+				orders = {};
+				angular.forEach(arguments[2], function(order){
+					orders[order.tracking_id] = order
+				});
+				init()
+			}
+		}]);
+	})
+	return;
 	var idTmr;
         function  getExplorer() {
             var explorer = window.navigator.userAgent ;
@@ -243,6 +531,7 @@ $this.excel = method1;
 			order.completeTime=item.completeTime;
 			order.completeMinutes=parseInt((item.completeTime-now)/60000);
 		})
+
 		var neworders=[];
 		angular.forEach(ordersObj, function(item){
 			neworders.push(item)
