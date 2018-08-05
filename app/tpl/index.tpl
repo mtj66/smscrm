@@ -9,6 +9,9 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">发送短信</h4>
       </div>
+      <div class="panel-body">
+      	{{smstxt2}}
+      </div>
       	<li class="list-group-item" ng-repeat="item in smsOrders" ng-class="{'list-group-item-success': item.smsok}">
       		<span class="pull-right" ng-if="item.smsok">发送完成</span>
       		{{item.customer_phone}}
@@ -70,7 +73,17 @@
         	</th>
           </tr>
         </thead>
-
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>已评价<span class="badge" ng-bind="getScoreCount(orders, teamid)"></span></td>
+	<td>已发送<span class="badge" ng-bind="getSmsCount(orders, teamid)"></span></td>
+	<td></td>
+</tr>
           <tr ng-repeat="order in filterOrders = (orders | filter: {team_id: teamid || '', state:state}| orderBy: complete_minutes)" ng-class="{'warning': order.checked}" ng-if="(score?order.score>0:(order.score||0)<=0)&&(sms?order.sms>0:(order.sms||0)<=0)">
             <td>{{order.team_name}}</td>
             <td>{{order.tracking_id}}</td>
@@ -79,7 +92,7 @@
 			<td>{{order.state==40 ? '已完成' : '配送中'}}</td>
 			<td>{{order.state==40?complete_minutes(order):'NaN'}}分钟</td>
             <td>{{order.score >=0 ? '已评' : '未评'}}</td>
-            <td>已发送{{order.sms||0}}次</td>
+            <td>已发送{{order.sms||0}}条</td>
             <td>
             	<input type="checkbox" ng-model="order.checked" ng-checked="order.checked">
             	<button type="button" class="btn btn-xs btn-info" ng-click="sendSms(order)">单条发送</button>
@@ -98,6 +111,8 @@ $export(function($this, $http, $timeout){
 	if(!window.fetch)return alert('请切换到极速模式');
 	var orders, scores, smsing, today = new Date().toLocaleDateString(), time = new Date().getTime();
 	var smstxt='【蜂鸟配送】[name]您好,我是外卖小哥.恳求您帮忙点击“超赞”好评,每一个评价对我的工作至关重要.如有不满意请勿差评，有问题可以拨打我本人电话，第一时间给您解决.祝您用餐愉快~退订回复T';
+	var smstxt2='【蜂鸟配送】您好.我是外卖小哥.恳求您点击\"超赞好评\"评价对我至关重要.如服务不佳请勿差评，有问题拨打我本人电话.祝您用餐愉快~退订回T';
+	$this.smstxt2=smstxt2;
 	function updateTime(){
 		time = new Date().getTime()
 	}
@@ -147,7 +162,7 @@ $export(function($this, $http, $timeout){
 				method: 'post',
 				credentials: 'include',
 				mode:'no-cors',
-				body: 'action=send&account=hxwl1185&password=D7C3121652BBA38B41428C5E700A42EE&mobile='+order.customer_phone+'&content='+escape(smstxt.replace('[name]', order.customer_name))
+				body: 'action=send&account=hxwl1185&password=D7C3121652BBA38B41428C5E700A42EE&mobile='+order.customer_phone+'&content='+escape(smstxt2.replace('[name]', order.customer_name))
 			}).then(function(response){
 				count--;
 				$this.$apply.to(function(){
@@ -196,7 +211,20 @@ $export(function($this, $http, $timeout){
 	$this.complete_minutes = function(e){
 		return parseInt((time - e.complete_time)/60000);
 	}
-
+$this.getScoreCount=function(orders,teamid){
+	var count=0;
+	angular.forEach(orders, function(order){
+		if(order.score>0&&order.team_id==(teamid||order.team_id))count++;
+	})
+		return count;
+}
+$this.getSmsCount=function(orders, teamid){
+	var count=0;
+	angular.forEach(orders, function(order){
+		if(order.sms>0&&order.team_id==(teamid||order.team_id))count++;
+	})
+		return count;
+}
 		function init(){
 			$http.get('https://app2-edu.ele.me/talaris-svr/webapi/sso/init', {
 				withCredentials: true
