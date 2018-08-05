@@ -139,7 +139,7 @@ $export(function($this, $http, $timeout){
 				method: 'post',
 				credentials: 'include',
 				mode:'no-cors',
-				body: 'action=send&account=gsj420&password=gsj4256&mobile=13393719370&phone='+order.customer_phone+'&content='+escape(smstxt.replace('[name]', order.customer_name))
+				body: 'action=send&account=hxwl1185&password=D7C3121652BBA38B41428C5E700A42EE&mobile='+order.customer_phone+'&content='+escape(smstxt.replace('[name]', order.customer_name))
 			}).then(function(response){
 				count--;
 				$this.$apply.to(function(){
@@ -188,7 +188,6 @@ $export(function($this, $http, $timeout){
 	}
 
 		function init(){
-			console.log(orders)
 			$http.get('https://app2-edu.ele.me/talaris-svr/webapi/sso/init', {
 				withCredentials: true
 			}).success(function(data){
@@ -304,7 +303,6 @@ $export(function($this, $http, $timeout){
 							$this.orders.push(orders[order.trackingId])
 						}else{
 							if(orders[order.trackingId].complete_time != order.completeTime || orders[order.trackingId].state != order.state){
-								console.log(orders[order.trackingId].complete_time, order.completeTime,orders[order.trackingId].state, order.state)
 
 								angular.extend(orders[order.trackingId], {
 									complete_time: order.completeTime,
