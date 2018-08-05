@@ -42,8 +42,13 @@
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':40==state}" ng-click="filter(state=40)">
 		已完成
 		</button>
+	</div>
+		<div class="btn-group btn-group-sm">
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':score}" ng-click="filter(score=true)">已评价</button>
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!score}" ng-click="filter(score=false)">未评价</button>
+		
+	</div>
+		<div class="btn-group btn-group-sm">
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':sms}" ng-click="filter(sms=true)">已发送</button>
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!sms}" ng-click="filter(sms=false)">未发送</button>
 	</div>
