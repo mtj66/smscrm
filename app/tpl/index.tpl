@@ -47,7 +47,9 @@
 	<p></p>
 	<div class="btn-group btn-group-sm">
 		<button type="button" class="btn btn-default" ng-class="{'btn-warning':!teamid}" ng-click="filter(teamid=0)">全部团队</button>
-		<button type="button" class="btn btn-default" ng-class="{'btn-warning':$parent.teamid==team.teamId}" ng-repeat="team in teams" ng-click="filter($parent.teamid=team.teamId)">{{team.teamName}}</button>
+		<button type="button" class="btn btn-default" ng-class="{'btn-warning':$parent.teamid==team.teamId}" ng-repeat="team in teams" ng-click="filter($parent.teamid=team.teamId)">{{team.teamName}}
+		<span class="badge" ng-bind="(orders|filter:{team_id:team.teamId}).length"></span>
+		</button>
 	</div>
 
 </div>
@@ -126,6 +128,8 @@ $export(function($this, $http, $timeout){
 		if(hide)$('#sms').modal('hide')
 		$this.smsOrders=[];
 		smsing=false;
+
+		$this.filter();
 	}
 
 	$('#sms').on('hide.bs.modal', function(){
@@ -179,7 +183,6 @@ $export(function($this, $http, $timeout){
 				smslist.push(order);
 			}
 		})
-		$this.filter();
 		if(!smslist.length)return alert('没有选择有效号码');
 		if(window.confirm('共选择'+smslist.length+'条有效号码，确定发送？')){
 			smsing=true;
