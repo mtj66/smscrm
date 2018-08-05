@@ -96,7 +96,11 @@ $export(function($this, $http, $timeout){
 	if(!window.fetch)return alert('请切换到极速模式');
 	var orders, scores, smsing, today = new Date().toLocaleDateString(), time = new Date().getTime();
 	var smstxt='【蜂鸟配送】[name]您好,我是外卖小哥.恳求您帮忙点击“超赞”好评,每一个评价对我的工作至关重要.如有不满意请勿差评，有问题可以拨打我本人电话，第一时间给您解决.祝您用餐愉快~退订回复T';
-	
+	function updateTime(){
+		time = new Date().getTime()
+	}
+	updateTime.timeout();
+
 	require(['html5sql'], function(){
 		$this.state = 40;
 	$this.score = false;
