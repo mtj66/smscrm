@@ -46,7 +46,7 @@
 	</a>
 	</div>
 	<p></p>
-	<button class="btn btn-danger btn-block" ng-click="showOrder(teamid)">手动刷新数据</button>
+	<button class="btn btn-danger btn-block" ng-click="showOrder(teamid)">手动刷新数据（已完成未评价手机号码正确）</button>
 
 </div>
 <table class="table  table-bordered table-hover">
