@@ -246,6 +246,7 @@ $this.getScoreCount=function(orders,teamid){
 $this.showOrder = function(teamid){
 if(teamid)$this.teamid=teamid;
 if(!$this.teamid)return alert('先从上面选择站点');
+NProgress.start()
 				$this.orders = [];
 				var orders=locals.get(today+'/'+$this.user.org_id, {});
 				var i=0;
@@ -261,6 +262,7 @@ if(!$this.teamid)return alert('先从上面选择站点');
 					//if(i==100)return;
 					$this.orders.push(order)
 				})
+				NProgress.done()
 				//alert('共选出 ' +i+ ' 条可发送订单')
 }
 $this.getSmsCount=function(orders, teamid){
