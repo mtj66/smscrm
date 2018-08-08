@@ -247,7 +247,7 @@ $this.showOrder = function(teamid){
 if(teamid)$this.teamid=teamid;
 if(!$this.teamid)return alert('先从上面选择站点');
 				$this.orders = [];
-				var orders=locals.get(today, {});
+				var orders=locals.get(today+'/'+$this.user.org_id, {});
 				var i=0;
 				angular.forEach(orders, function(order){
 					if($this.orders[order.tracking_id])return;
@@ -276,14 +276,15 @@ $this.getSmsCount=function(orders, teamid){
 			}).success(function(data){
 				if(200 != data.err_code)return alert('授权失败请重试！');
 				//var data = locals.get(today.replace(/\//g, '_')+'_'+data.data.org_id)
-				alldata=locals.get(today, {});
-				getTeam($this.user = data.data);
+				$this.user = data.data
+				alldata=locals.get(today+'/'+$this.user.org_id, {});
+				getTeam();
 			}).error(function(){
 				alert('登录失败')
 			})
 		}
 		function saveOrder(){
-			locals.set(today, alldata);
+			locals.set(today+'/'+$this.user.org_id, alldata);
 			return;
 			var count = 0,
 				index = 0,
