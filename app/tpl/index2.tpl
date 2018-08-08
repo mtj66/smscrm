@@ -83,7 +83,7 @@
           			<td>{{order.state==40?complete_minutes(order):'NaN'}}分钟</td>
             <td>{{order.star}}</td>
             <td>{{order.sms}}</td>
-            <td ng-click="order.checked=!order.checked">
+            <td >
             	<input type="checkbox" ng-model="order.checked" ng-checked="order.checked">
             </td>
           </tr> 
@@ -197,13 +197,18 @@ $export(function($this, $http, $timeout){
 				body: 'action=send&account=hxwl1185&password=D7C3121652BBA38B41428C5E700A42EE&mobile='+mobile.join(',')+'&content='+escape(smstxt2)
 			}).then(function(response){
 				alert('发送完成')
-					$this.sendSmsCanel(true)
-					angular.forEach(mobile, function(m){
-						if(alldata[m])alldata[m].sms++;
+$this.$apply.to(function(){
+
+			$this.sending=false;
+					angular.forEach($this.smsOrders, function(order){
+						if(alldata[order.tracking_id])alldata[order.tracking_id].sms++;
+						console.log(alldata[order.tracking_id].sms)
 					})
 					saveOrder()
+					$this.sendSmsCanel(true)
 					$this.showOrder($this.teamid)
 			})
+})
 
 
 	}
