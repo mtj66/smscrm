@@ -257,7 +257,7 @@ NProgress.start()
 					if(order.state!=40)return;
 					if(!order.customer_phone)return;
 					if(order.customer_phone.toString().indexOf('950')==0)return;
-					if(!$this.teamid!=order.team_id)return;
+					if($this.teamid!=order.team_id)return;
 					i++;
 					//if(i==100)return;
 					$this.orders.push(order)
@@ -457,6 +457,7 @@ $this.getSmsCount=function(orders, teamid){
 								state: order.state,
 							})
 						}
+						//console.log(alldata[id].complete_time,9)
 						if(!orders[order.trackingId]){
 							orders[order.trackingId] = {
 								tracking_id: order.trackingId,
