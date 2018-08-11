@@ -76,7 +76,7 @@
 	<td>已发送<span class="badge" ng-bind="getSmsCount(orders, teamid)"></span></td>
 	<td></td>
 </tr> -->
-           <tr ng-repeat="order in filterOrders = (orders | filter: {team_id: teamid}| orderBy: complete_minutes)" ng-class="{'warning': order.checked}">
+           <tr ng-repeat="order in filterOrders = (orders | filter: {team_id: teamid||''}| orderBy: complete_minutes)" ng-class="{'warning': order.checked}">
             <td>{{order.tracking_id}}</td>
             <td>{{order.customer_name}}</td>
             <td>{{order.customer_phone}}</td>
