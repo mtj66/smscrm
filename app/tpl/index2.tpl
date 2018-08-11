@@ -122,7 +122,7 @@ $export(function($this, $http, $timeout){
 	if(!window.fetch)return alert('请切换到极速模式');
 	var orders, scores, smsing, today = new Date().toLocaleDateString(), time = new Date().getTime();
 	var smstxt='【蜂鸟配送】[name]您好,我是外卖小哥.恳求您帮忙点击“超赞”好评,每一个评价对我的工作至关重要.如有不满意请勿差评，有问题可以拨打我本人电话，第一时间给您解决.祝您用餐愉快~退订回复T';
-	var smstxt2='【蜂鸟配送】您好.我是外卖小哥.恳求您点击\"超赞好评\"评价对我至关重要.如服务不佳请勿差评，有问题拨打我本人电话.祝您用餐愉快~退订回T';
+	var smstxt2='【蜂鸟配送】您好我是送餐员,出门务工不易恳求您点开订单点击“超赞”好评.评价对我至关重要.您的每一个好评都是我坚持下去的动力.如打扰退订回T';
 	$this.smstxt2=smstxt2;
 	function updateTime(){
 		time = new Date().getTime()
