@@ -37,6 +37,7 @@
 	<!-- <input type="checkbox" ng-false-value='' ng-true-value="40" ng-model="$root.states">仅显示已完成{{$root.states}} -->
 
 	<div class="btn-group btn-group-sm">
+		<a href="#" class="btn"  ng-class="{'btn-warning': teamid==0, 'btn-default': teamid!=0}" ng-click="showOrder(0)">全部</a>
 		<a ng-repeat="team in teams" class="btn" ng-class="{'btn-warning': teamid==team.teamId, 'btn-default': teamid!=team.teamId}" ng-click="showOrder(team.teamId)" style="height: 66px">
 		{{team.teamName}}
 <br>
@@ -249,8 +250,8 @@ $this.getScoreCount=function(orders,teamid){
 		return count;
 }
 $this.showOrder = function(teamid){
-if(teamid)$this.teamid=teamid;
-if(!$this.teamid)return alert('先从上面选择站点');
+if(arguments.length)$this.teamid=teamid;
+//if(!$this.teamid)return alert('先从上面选择站点');
 NProgress.start()
 				$this.orders = [];
 				var orders=locals.get(today+'/'+$this.user.org_id, {});
@@ -262,7 +263,7 @@ NProgress.start()
 					if(order.state!=40)return;
 					if(!order.customer_phone)return;
 					if(order.customer_phone.toString().indexOf('950')==0)return;
-					if($this.teamid!=order.team_id)return;
+					if($this.teamid&&$this.teamid!=order.team_id)return;
 					i++;
 					//if(i==100)return;
 					$this.orders.push(order)
